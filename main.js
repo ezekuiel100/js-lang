@@ -4,6 +4,11 @@ const ILLEGAL = "ILLEGAL",
   INT = "INT",
   ASSIGN = "=",
   PLUS = "+",
+  MINUS = "-",
+  BANG = "!",
+  ASTERISK = "*",
+  SLASH = "/",
+  COMMA = ",",
   SEMICOLON = ";",
   LPAREN = "(",
   RPAREN = ")",
@@ -15,7 +20,11 @@ const ILLEGAL = "ILLEGAL",
   FALSE = "FALSE",
   IF = "IF",
   ELSE = "ELSE",
-  RETURN = "RETURN";
+  RETURN = "RETURN",
+  EQ = "==",
+  NOT_EQ = "!=",
+  LT = "<",
+  GT = ">";
 
 const keyword = new Map([
   ["fn", FUNCTION],
@@ -53,7 +62,13 @@ function nextToken() {
 
   switch (ch) {
     case "=":
-      tok = Token(ASSIGN, ch);
+      if (peekChar("=")) {
+        const char = input[position];
+        readChar();
+        tok = Token(EQ, char + ch);
+      } else {
+        tok = Token(ASSIGN, ch);
+      }
       break;
     case ";":
       tok = Token(SEMICOLON, ch);
@@ -72,6 +87,33 @@ function nextToken() {
       break;
     case "+":
       tok = Token(PLUS, ch);
+      break;
+    case "-":
+      tok = Token(MINUS, ch);
+      break;
+    case "!":
+      if (peekChar("=")) {
+        const char = input[position];
+        readChar();
+        tok = Token(NOT_EQ, char + ch);
+      } else {
+        tok = Token(BANG, ch);
+      }
+      break;
+    case "/":
+      tok = Token(SLASH, ch);
+      break;
+    case "*":
+      tok = Token(ASTERISK, ch);
+      break;
+    case "<":
+      tok = Token(LT, ch);
+      break;
+    case ">":
+      tok = Token(GT, ch);
+      break;
+    case ",":
+      tok = Token(COMMA, ch);
       break;
     default:
       if (isLetter(ch)) {
@@ -132,6 +174,14 @@ function lookupIdent(ident) {
   }
 
   return IDENT;
+}
+
+function peekChar(char) {
+  if (input[readPosition] === char) {
+    return true;
+  }
+
+  return false;
 }
 
 readChar();
