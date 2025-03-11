@@ -42,7 +42,7 @@ function Token(type, literal) {
   return { type, literal };
 }
 
-let input = "let x = 54 + 30";
+let input = "let x = 54  + 30";
 let position = 0;
 let readPosition = 0;
 let ch = "";
@@ -60,7 +60,7 @@ function readChar() {
 
 function nextToken() {
   let tok;
-  skipWhitespace(ch);
+  skipWhitespace();
 
   switch (ch) {
     case "=":
@@ -162,9 +162,8 @@ function readNumber() {
   return input.slice(startPos, position);
 }
 
-//Lidar com quebra de linha e tabulações . so pula um espaço vazio
-function skipWhitespace(char) {
-  if (char === " ") {
+function skipWhitespace() {
+  while (ch === " " || ch === "\n" || ch === "\t" || ch === "r") {
     position = readPosition;
     readPosition++;
     ch = input[position];
