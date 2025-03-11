@@ -42,7 +42,7 @@ function Token(type, literal) {
   return { type, literal };
 }
 
-let input = "let x = 54  + 30";
+let input = "let x = 54 + 30";
 let position = 0;
 let readPosition = 0;
 let ch = "";
@@ -121,9 +121,10 @@ function nextToken() {
       if (isLetter(ch)) {
         let identifier = readIdentifier();
         tok = Token(lookupIdent(identifier), identifier);
-        break;
+        return tok;
       } else if (isDigit(ch)) {
         tok = Token(tokenType.INT, readNumber());
+        return tok;
       } else {
         tok = Token(tokenType.ILLEGAL, ch);
         break;
