@@ -1,39 +1,41 @@
-const ILLEGAL = "ILLEGAL",
-  EOF = "EOF",
-  IDENT = "INDET",
-  INT = "INT",
-  ASSIGN = "=",
-  PLUS = "+",
-  MINUS = "-",
-  BANG = "!",
-  ASTERISK = "*",
-  SLASH = "/",
-  COMMA = ",",
-  SEMICOLON = ";",
-  LPAREN = "(",
-  RPAREN = ")",
-  LBRACE = "{",
-  RBRACE = "}",
-  FUNCTION = "FUNCTION",
-  LET = "LET",
-  TRUE = "TRUE",
-  FALSE = "FALSE",
-  IF = "IF",
-  ELSE = "ELSE",
-  RETURN = "RETURN",
-  EQ = "==",
-  NOT_EQ = "!=",
-  LT = "<",
-  GT = ">";
+const tokenType = {
+  ILLEGAL: "ILLEGAL",
+  EOF: "EOF",
+  IDENT: "IDENT",
+  INT: "INT",
+  ASSIGN: "=",
+  PLUS: "+",
+  MINUS: "-",
+  BANG: "!",
+  ASTERISK: "*",
+  SLASH: "/",
+  COMMA: ",",
+  SEMICOLON: ";",
+  LPAREN: "(",
+  RPAREN: ")",
+  LBRACE: "{",
+  RBRACE: "}",
+  FUNCTION: "FUNCTION",
+  LET: "LET",
+  TRUE: "TRUE",
+  FALSE: "FALSE",
+  IF: "IF",
+  ELSE: "ELSE",
+  RETURN: "RETURN",
+  EQ: "==",
+  NOT_EQ: "!=",
+  LT: "<",
+  GT: ">",
+};
 
 const keyword = new Map([
-  ["fn", FUNCTION],
-  ["let", LET],
-  ["true", TRUE],
-  ["false", FALSE],
-  ["if", IF],
-  ["else", ELSE],
-  ["return", RETURN],
+  ["fn", tokenType.FUNCTION],
+  ["let", tokenType.LET],
+  ["true", tokenType.TRUE],
+  ["false", tokenType.FALSE],
+  ["if", tokenType.IF],
+  ["else", tokenType.ELSE],
+  ["return", tokenType.RETURN],
 ]);
 
 function Token(type, literal) {
@@ -67,53 +69,53 @@ function nextToken() {
         readChar();
         tok = Token(EQ, char + ch);
       } else {
-        tok = Token(ASSIGN, ch);
+        tok = Token(tokenType.ASSIGN, ch);
       }
       break;
     case ";":
-      tok = Token(SEMICOLON, ch);
+      tok = Token(tokenType.SEMICOLON, ch);
       break;
     case "(":
-      tok = Token(LPAREN, ch);
+      tok = Token(tokenType.LPAREN, ch);
       break;
     case ")":
-      tok = Token(RPAREN, ch);
+      tok = Token(tokenType.RPAREN, ch);
       break;
     case "{":
-      tok = Token(LBRACE, ch);
+      tok = Token(tokenType.LBRACE, ch);
       break;
     case "}":
-      tok = Token(RBRACE, ch);
+      tok = Token(tokenType.RBRACE, ch);
       break;
     case "+":
-      tok = Token(PLUS, ch);
+      tok = Token(tokenType.PLUS, ch);
       break;
     case "-":
-      tok = Token(MINUS, ch);
+      tok = Token(tokenType.MINUS, ch);
       break;
     case "!":
       if (peekChar("=")) {
         const char = input[position];
         readChar();
-        tok = Token(NOT_EQ, char + ch);
+        tok = Token(tokenType.NOT_EQ, char + ch);
       } else {
-        tok = Token(BANG, ch);
+        tok = Token(tokenType.BANG, ch);
       }
       break;
     case "/":
-      tok = Token(SLASH, ch);
+      tok = Token(tokenType.SLASH, ch);
       break;
     case "*":
-      tok = Token(ASTERISK, ch);
+      tok = Token(tokenType.ASTERISK, ch);
       break;
     case "<":
-      tok = Token(LT, ch);
+      tok = Token(tokenType.LT, ch);
       break;
     case ">":
-      tok = Token(GT, ch);
+      tok = Token(tokenType.GT, ch);
       break;
     case ",":
-      tok = Token(COMMA, ch);
+      tok = Token(tokenType.COMMA, ch);
       break;
     default:
       if (isLetter(ch)) {
@@ -121,9 +123,9 @@ function nextToken() {
         tok = Token(lookupIdent(identifier), identifier);
         break;
       } else if (isDigit(ch)) {
-        tok = Token(INT, readNumber());
+        tok = Token(tokenType.INT, readNumber());
       } else {
-        tok = Token(ILLEGAL, ch);
+        tok = Token(tokenType.ILLEGAL, ch);
         break;
       }
   }
@@ -160,6 +162,7 @@ function readNumber() {
   return input.slice(startPos, position);
 }
 
+//Lidar com quebra de linha e tabulações . so pula um espaço vazio
 function skipWhitespace(char) {
   if (char === " ") {
     position = readPosition;
@@ -173,7 +176,7 @@ function lookupIdent(ident) {
     return keyword.get(ident);
   }
 
-  return IDENT;
+  return tokenType.IDENT;
 }
 
 function peekChar(char) {
