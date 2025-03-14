@@ -37,3 +37,23 @@ function parseStatement() {
       return null;
   }
 }
+
+function parseLetStatement() {
+  let stmt = { token: curToken };
+
+  if (!expectPeek(tokenType.IDENT)) {
+    return null;
+  }
+
+  stmt.name = { token: curToken, value: curToken.literal };
+
+  if (!expectPeek(tokenType.ASSIGN)) {
+    return null;
+  }
+
+  while (!curTokenIs(tokenType.SEMICOLON)) {
+    p.nextToken();
+  }
+
+  return stmt;
+}
