@@ -2,6 +2,7 @@ import lexer, { tokenType } from "./lexer.mjs";
 
 let programStatement = [];
 let curToken, peekToken;
+let programErrors = [];
 
 function newParser() {
   const lexer = lexer(code);
@@ -73,4 +74,16 @@ function expectPeek(tokenType) {
   } else {
     return false;
   }
+}
+
+function errors() {
+  return programErrors;
+}
+
+function peekError(tokenType) {
+  const msg = `expected next token to be ${tokenType}, got instead ${peekToken.Type}`;
+
+  console.log(msg);
+
+  programErrors.push(msg);
 }
