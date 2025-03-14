@@ -34,6 +34,8 @@ function parseStatement() {
   switch (curToken.type) {
     case tokenType.LET:
       return parseLetStatement();
+    case tokenType.RETURN:
+      return parseReturnStatement();
     default:
       return null;
   }
@@ -72,12 +74,9 @@ function expectPeek(tokenType) {
     nextToken();
     return true;
   } else {
+    peekError(tokenType);
     return false;
   }
-}
-
-function errors() {
-  return programErrors;
 }
 
 function peekError(tokenType) {
@@ -86,4 +85,16 @@ function peekError(tokenType) {
   console.log(msg);
 
   programErrors.push(msg);
+}
+
+function parseReturnStatement() {
+  stmt = { token: curToken };
+
+  nextToken();
+
+  while (!curTokenIs(tokenType.SEMICOLON)) {
+    nextToken();
+  }
+
+  return stmt;
 }
