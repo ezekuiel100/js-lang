@@ -62,6 +62,15 @@ function curTokenIs(tokenType) {
   return curToken.type === tokenType;
 }
 
-function peekToken(tokenType) {
+function peekTokenIs(tokenType) {
   return peekToken.type === tokenType;
+}
+
+function expectPeek(tokenType) {
+  if (peekTokenIs(tokenType)) {
+    nextToken();
+    return true;
+  } else {
+    return false;
+  }
 }
