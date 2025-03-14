@@ -61,3 +61,7 @@ function parseLetStatement() {
 function curTokenIs(tokenType) {
   return curToken.type === tokenType;
 }
+
+function peekToken(tokenType) {
+  return peekToken.type === tokenType;
+}
