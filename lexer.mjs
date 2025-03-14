@@ -1,4 +1,4 @@
-const tokenType = {
+export const tokenType = {
   ILLEGAL: "ILLEGAL",
   EOF: "EOF",
   IDENT: "IDENT",
