@@ -4,14 +4,14 @@ let programStatement = [];
 let curToken, peekToken;
 
 function newParser() {
-  const p = lexer(code);
+  const lexer = lexer(code);
 
-  p.nextToken();
-  p.nextToken();
+  nextToken();
+  nextToken();
 
   function nextToken() {
     curToken = peekToken;
-    peekToken = p.nextToken();
+    peekToken = lexer.nextToken();
   }
 
   function parseProgram() {
@@ -23,7 +23,7 @@ function newParser() {
       }
     }
 
-    p.nextToken();
+    nextToken();
   }
 
   return programStatement;
@@ -52,7 +52,7 @@ function parseLetStatement() {
   }
 
   while (!curTokenIs(tokenType.SEMICOLON)) {
-    p.nextToken();
+    nextToken();
   }
 
   return stmt;
