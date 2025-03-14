@@ -57,3 +57,7 @@ function parseLetStatement() {
 
   return stmt;
 }
+
+function curTokenIs(tokenType) {
+  return curToken.type === tokenType;
+}
