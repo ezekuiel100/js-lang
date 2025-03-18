@@ -20,6 +20,12 @@ export function Parser() {
   nextToken();
   nextToken();
 
+  const prefixParseFns = new Map();
+
+  function registerPrefix(tokenType, fn) {
+    prefixParseFns.set(tokenType, fn);
+  }
+
   function nextToken() {
     curToken = peekToken;
     peekToken = getNextToken();
@@ -37,96 +43,96 @@ export function Parser() {
     nextToken();
   }
 
+  function parseStatement() {
+    switch (curToken.type) {
+      case tokenType.LET:
+        return parseLetStatement();
+      case tokenType.RETURN:
+        return parseReturnStatement();
+      default:
+        return parseExpressionStatement();
+    }
+  }
+
+  function parseLetStatement() {
+    let stmt = { token: curToken };
+
+    if (!expectPeek(tokenType.IDENT)) {
+      return null;
+    }
+
+    stmt.name = { token: curToken, value: curToken.literal };
+
+    if (!expectPeek(tokenType.ASSIGN)) {
+      return null;
+    }
+
+    while (!curTokenIs(tokenType.SEMICOLON)) {
+      nextToken();
+    }
+
+    return stmt;
+  }
+
+  function curTokenIs(tokenType) {
+    return curToken.type === tokenType;
+  }
+
+  function peekTokenIs(tokenType) {
+    return peekToken.type === tokenType;
+  }
+
+  function expectPeek(tokenType) {
+    if (peekTokenIs(tokenType)) {
+      nextToken();
+      return true;
+    } else {
+      peekError(tokenType);
+      return false;
+    }
+  }
+
+  function peekError(tokenType) {
+    const msg = `expected next token to be ${tokenType}, got instead ${peekToken.Type}`;
+
+    console.log(msg);
+
+    programErrors.push(msg);
+  }
+
+  function parseReturnStatement() {
+    stmt = { token: curToken };
+
+    nextToken();
+
+    while (!curTokenIs(tokenType.SEMICOLON)) {
+      nextToken();
+    }
+
+    return stmt;
+  }
+
+  function parseExpressionStatement() {
+    stmt = { token: curToken };
+    stmt.expression = parseExpression(LOWEST);
+
+    if (peekToken(tokenType.SEMICOLON)) {
+      nextToken();
+    }
+
+    return stmt;
+  }
+
+  function parseExpression(precedence) {
+    const prefix = prefixParseFns[curToken.type];
+
+    if (prefix === null) {
+      return null;
+    }
+
+    leftExp = prefix();
+    return leftExp;
+  }
+
   return programStatement;
-}
-
-function parseStatement() {
-  switch (curToken.type) {
-    case tokenType.LET:
-      return parseLetStatement();
-    case tokenType.RETURN:
-      return parseReturnStatement();
-    default:
-      return parseExpressionStatement();
-  }
-}
-
-function parseLetStatement() {
-  let stmt = { token: curToken };
-
-  if (!expectPeek(tokenType.IDENT)) {
-    return null;
-  }
-
-  stmt.name = { token: curToken, value: curToken.literal };
-
-  if (!expectPeek(tokenType.ASSIGN)) {
-    return null;
-  }
-
-  while (!curTokenIs(tokenType.SEMICOLON)) {
-    nextToken();
-  }
-
-  return stmt;
-}
-
-function curTokenIs(tokenType) {
-  return curToken.type === tokenType;
-}
-
-function peekTokenIs(tokenType) {
-  return peekToken.type === tokenType;
-}
-
-function expectPeek(tokenType) {
-  if (peekTokenIs(tokenType)) {
-    nextToken();
-    return true;
-  } else {
-    peekError(tokenType);
-    return false;
-  }
-}
-
-function peekError(tokenType) {
-  const msg = `expected next token to be ${tokenType}, got instead ${peekToken.Type}`;
-
-  console.log(msg);
-
-  programErrors.push(msg);
-}
-
-function parseReturnStatement() {
-  stmt = { token: curToken };
-
-  nextToken();
-
-  while (!curTokenIs(tokenType.SEMICOLON)) {
-    nextToken();
-  }
-
-  return stmt;
-}
-
-function parseExpressionStatement() {
-  stmt = { token: curToken };
-  stmt.expression = parseExpression(LOWEST);
-
-  if (peekToken(tokenType.SEMICOLON)) {
-    nextToken();
-  }
-
-  return stmt;
-}
-
-function parseExpression(precedence) {
-  const prefix = prefixParseFns[curToken.type];
-
-  if (prefix === null) {
-    return null;
-  }
-
-  leftExp = prefix();
-  return leftExp;
 }
