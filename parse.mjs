@@ -4,15 +4,15 @@ let programStatement = [];
 let curToken, peekToken;
 let programErrors = [];
 
-export function Parser() {
-  const lexer = lexer(code);
+export function Parser(code) {
+  const getNextToken = lexer(code);
 
   nextToken();
   nextToken();
 
   function nextToken() {
     curToken = peekToken;
-    peekToken = lexer.nextToken();
+    peekToken = getNextToken();
   }
 
   function parseProgram() {
@@ -37,7 +37,7 @@ function parseStatement() {
     case tokenType.RETURN:
       return parseReturnStatement();
     default:
-      return null;
+      return parseExpressionStatement();
   }
 }
 
