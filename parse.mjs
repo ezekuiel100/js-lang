@@ -4,6 +4,16 @@ let programStatement = [];
 let curToken, peekToken;
 let programErrors = [];
 
+const Precedence = {
+  LOWEST: 1,
+  EQUALS: 2, // ==
+  LESSGREATER: 3, // > or <
+  SUM: 4, // +
+  PRODUCT: 5, // *
+  PREFIX: 6, // -X or !X
+  CALL: 7, // myFunction(X)
+};
+
 export function Parser(code) {
   const getNextToken = lexer(code);
 
