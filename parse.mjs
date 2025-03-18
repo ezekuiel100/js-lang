@@ -14,7 +14,7 @@ const Precedence = {
   CALL: 7, // myFunction(X)
 };
 
-export function Parser(code) {
+export function Parser() {
   const getNextToken = lexer(code);
 
   nextToken();
@@ -118,4 +118,15 @@ function parseExpressionStatement() {
   }
 
   return stmt;
+}
+
+function parseExpression(precedence) {
+  const prefix = prefixParseFns[curToken.type];
+
+  if (prefix === null) {
+    return null;
+  }
+
+  leftExp = prefix();
+  return leftExp;
 }
