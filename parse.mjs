@@ -17,13 +17,18 @@ const Precedence = {
 export function Parser() {
   const getNextToken = lexer(code);
 
-  nextToken();
+  neinoken();
   nextToken();
 
   const prefixParseFns = new Map();
+  const infixParseFns = new Map();
 
   function registerPrefix(tokenType, fn) {
     prefixParseFns.set(tokenType, fn);
+  }
+
+  function registerInfix(tokenType, fn) {
+    infixParseFns.set(tokenType, fn);
   }
 
   function nextToken() {
