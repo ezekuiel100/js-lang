@@ -37,6 +37,8 @@ export function Parser() {
   registerPrefix(tokenType.INT, parseIntegerLiteral);
   registerPrefix(tokenType.BANG, parsePrefixExpression);
   registerPrefix(tokenType.MINUS, parsePrefixExpression);
+  registerPrefix(tokenType.TRUE, parseBoolean);
+  registerPrefix(tokenType.FALSE, parseBoolean);
 
   const infixParseFns = new Map();
   registerInfix(tokenType.PLUS, parseInfixExpression);
@@ -207,6 +209,10 @@ export function Parser() {
     }
 
     return leftExp;
+  }
+
+  function parseBoolean() {
+    return { token: curToken, value: curTokenIs(tokenType.TRUE) };
   }
 
   return programStatement;
