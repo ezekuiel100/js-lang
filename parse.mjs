@@ -190,3 +190,13 @@ function peekPrecedence() {
 
   return precedence.LOWEST;
 }
+
+function curPrecedence() {
+  const curPrecedence = Precedence.get(curToken.type);
+
+  if (curPrecedence) {
+    return curPrecedence;
+  }
+
+  return precedence.LOWEST;
+}
