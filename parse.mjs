@@ -140,8 +140,6 @@ export function Parser() {
   function peekError(tokenType) {
     const msg = `expected next token to be ${tokenType}, got instead ${peekToken.Type}`;
 
-    console.log(msg);
-
     programErrors.push(msg);
   }
 
@@ -181,4 +179,14 @@ export function Parser() {
   }
 
   return programStatement;
+}
+
+function peekPrecedence() {
+  const precedence = Precedence.get(peekToken.type);
+
+  if (precedence) {
+    return precedence;
+  }
+
+  return precedence.LOWEST;
 }
