@@ -3,6 +3,7 @@ import lexer, { tokenType } from "./lexer.mjs";
 let programStatement = [];
 let curToken, peekToken;
 let programErrors = [];
+const errors = [];
 
 const Precedence = {
   LOWEST: 1,
@@ -45,6 +46,11 @@ export function Parser() {
 
   function parseIntegerLiteral() {
     return { token: curToken, value: curToken.literal };
+  }
+
+  function noPrefixParseFnError(token) {
+    const msg = `no prefix parse function for found ${token}`;
+    errors.push(msg);
   }
 
   function parseProgram() {
@@ -143,6 +149,7 @@ export function Parser() {
     const prefix = prefixParseFns.get(curToken.type);
 
     if (!prefix) {
+      noPrefixParseFnError(curToken.type);
       return null;
     }
 
