@@ -39,6 +39,14 @@ export function Parser() {
   registerPrefix(tokenType.MINUS, parsePrefixExpression);
 
   const infixParseFns = new Map();
+  registerInfix(tokenType.PLUS, parseInfixExpression);
+  registerInfix(tokenType.MINUS, parseInfixExpression);
+  registerInfix(tokenType.SLASH, parseInfixExpression);
+  registerInfix(tokenType.ASTERISK, parseInfixExpression);
+  registerInfix(tokenType.EQ, parseInfixExpression);
+  registerInfix(tokenType.NOT_EQ, parseInfixExpression);
+  registerInfix(tokenType.LT, parseInfixExpression);
+  registerInfix(tokenType.GT, parseInfixExpression);
 
   function registerPrefix(tokenType, fn) {
     prefixParseFns.set(tokenType, fn);
@@ -67,6 +75,17 @@ export function Parser() {
     nextToken();
 
     expression.right = parseExpression(PREFIX);
+
+    return expression;
+  }
+
+  function parseInfixExpression(left) {
+    const expression = { token: curToken, operator: curToken.literal, left };
+
+    const precedence = curPrecedence();
+    nextToken();
+
+    expression.right = parseExpression(precedence);
 
     return expression;
   }
