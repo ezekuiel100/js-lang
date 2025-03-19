@@ -194,6 +194,18 @@ export function Parser() {
     }
 
     leftExp = prefix();
+
+    while (!peekTokenIs(tokenType.SEMICOLON) && precedence < peekPrecedence()) {
+      const infix = infixParseFns.get(peekToken.type);
+
+      if (!infix) {
+        return leftExp;
+      }
+
+      nextToken();
+      leftExp = infix(leftExp);
+    }
+
     return leftExp;
   }
 
