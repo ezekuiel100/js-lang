@@ -21,6 +21,8 @@ export function Parser() {
   nextToken();
 
   const prefixParseFns = new Map();
+  registerPrefix(tokenType.IDENT, parseIdentifier);
+
   const infixParseFns = new Map();
 
   function registerPrefix(tokenType, fn) {
@@ -34,6 +36,10 @@ export function Parser() {
   function nextToken() {
     curToken = peekToken;
     peekToken = getNextToken();
+  }
+
+  function parseIdentifier() {
+    return { token: curToken, value: curToken.literal };
   }
 
   function parseProgram() {
