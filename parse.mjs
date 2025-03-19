@@ -129,9 +129,9 @@ export function Parser() {
   }
 
   function parseExpression(precedence) {
-    const prefix = prefixParseFns.has(curToken.type);
+    const prefix = prefixParseFns.get(curToken.type);
 
-    if (prefix) {
+    if (!prefix) {
       return null;
     }
 
