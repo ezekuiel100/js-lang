@@ -5,7 +5,7 @@ let curToken, peekToken;
 let programErrors = [];
 const errors = [];
 
-const Precedence = {
+const precedence = {
   LOWEST: 1,
   EQUALS: 2, // ==
   LESSGREATER: 3, // > or <
@@ -14,6 +14,17 @@ const Precedence = {
   PREFIX: 6, // -X or !X
   CALL: 7, // myFunction(X)
 };
+
+const Precedence = new Map([
+  [tokenType.EQ, precedence.EQUALS],
+  [tokenType.NOT_EQ, precedence.EQUALS],
+  [tokenType.LT, precedence.LESSGREATER],
+  [tokenType.GT, precedence.LESSGREATER],
+  [tokenType.PLUS, precedence.SUM],
+  [tokenType.MINUS, precedence.SUM],
+  [tokenType.SLASH, precedence.PRODUCT],
+  [tokenType.ASTERISK, precedence.PRODUCT],
+]);
 
 export function Parser() {
   const getNextToken = lexer(code);
