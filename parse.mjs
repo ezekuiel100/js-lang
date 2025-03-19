@@ -24,6 +24,8 @@ export function Parser() {
   const prefixParseFns = new Map();
   registerPrefix(tokenType.IDENT, parseIdentifier);
   registerPrefix(tokenType.INT, parseIntegerLiteral);
+  registerPrefix(tokenType.BANG, parsePrefixExpression);
+  registerPrefix(tokenType.MINUS, parsePrefixExpression);
 
   const infixParseFns = new Map();
 
@@ -46,6 +48,16 @@ export function Parser() {
 
   function parseIntegerLiteral() {
     return { token: curToken, value: curToken.literal };
+  }
+
+  function parsePrefixExpression() {
+    const expression = { token: curToken, operator: curToken.literal };
+
+    nextToken();
+
+    expression.right = parseExpression(PREFIX);
+
+    return expression;
   }
 
   function noPrefixParseFnError(token) {
