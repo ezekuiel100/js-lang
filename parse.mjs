@@ -39,6 +39,7 @@ export function Parser() {
   registerPrefix(tokenType.MINUS, parsePrefixExpression);
   registerPrefix(tokenType.TRUE, parseBoolean);
   registerPrefix(tokenType.FALSE, parseBoolean);
+  registerPrefix(tokenType.LPAREN, parseGroupedExpression);
 
   const infixParseFns = new Map();
   registerInfix(tokenType.PLUS, parseInfixExpression);
@@ -213,6 +214,18 @@ export function Parser() {
 
   function parseBoolean() {
     return { token: curToken, value: curTokenIs(tokenType.TRUE) };
+  }
+
+  function parseGroupedExpression() {
+    nextToken();
+
+    const exp = parseExpression(LOWEST);
+
+    if (!expectPeek(tokenType.RPAREN)) {
+      return null;
+    }
+
+    return exp;
   }
 
   return programStatement;
