@@ -66,20 +66,20 @@ export function Parser(getNextTokens) {
   }
 
   function parseProgram() {
-    const program = {};
-    program.statements = [];
+    const statements = [];
 
     while (curToken.type != tokenType.EOF) {
       let stmt = parseStatement();
+      console.log(stmt);
 
       if (stmt != null) {
-        program.push(stmt);
+        statements.push(stmt);
       }
 
       nextToken();
     }
 
-    return program;
+    return statements;
   }
 
   function parseIdentifier() {
@@ -144,7 +144,7 @@ export function Parser(getNextTokens) {
 
     stmt.value = parseExpression(precedence.LOWEST);
 
-    while (!curTokenIs(tokenType.SEMICOLON)) {
+    if (peekTokenIs(tokenType.SEMICOLON)) {
       nextToken();
     }
 
@@ -191,7 +191,7 @@ export function Parser(getNextTokens) {
 
   function parseExpressionStatement() {
     const stmt = { token: curToken };
-    stmt.expression = parseExpression(LOWEST);
+    stmt.expression = parseExpression(precedence.LOWEST);
 
     if (peekTokenIs(tokenType.SEMICOLON)) {
       nextToken();

@@ -17,4 +17,9 @@ rl.question("Digite um codigo: ", (code) => {
   }
 
   rl.close();
+
+  rl.on("close", () => {
+    console.log("Encerrando o programa...");
+    process.exit(0);
+  });
 });
