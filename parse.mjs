@@ -70,7 +70,6 @@ export function Parser(getNextTokens) {
 
     while (curToken.type != tokenType.EOF) {
       let stmt = parseStatement();
-      console.log(stmt);
 
       if (stmt != null) {
         statements.push(stmt);
@@ -79,19 +78,19 @@ export function Parser(getNextTokens) {
       nextToken();
     }
 
-    return statements;
+    return { type: "Program", body: statements };
   }
 
   function parseIdentifier() {
-    return { token: curToken, value: curToken.literal };
+    return { type: "Identifier", value: curToken.literal };
   }
 
   function parseIntegerLiteral() {
-    return { token: curToken, value: curToken.literal };
+    return { type: "IntegerLiteral", value: curToken.literal };
   }
 
   function parsePrefixExpression() {
-    const expression = { token: curToken, operator: curToken.literal };
+    const expression = { type: "PrefixExpression", operator: curToken.literal };
 
     nextToken();
 
@@ -101,7 +100,11 @@ export function Parser(getNextTokens) {
   }
 
   function parseInfixExpression(left) {
-    const expression = { token: curToken, operator: curToken.literal, left };
+    const expression = {
+      type: "InfixExpression",
+      operator: curToken.literal,
+      left,
+    };
 
     const precedence = curPrecedence();
     nextToken();
@@ -128,13 +131,13 @@ export function Parser(getNextTokens) {
   }
 
   function parseLetStatement() {
-    let stmt = { token: curToken };
+    let stmt = { type: "Let" };
 
     if (!expectPeek(tokenType.IDENT)) {
       return null;
     }
 
-    stmt.name = { token: curToken, value: curToken.literal };
+    stmt.name = curToken.literal;
 
     if (!expectPeek(tokenType.ASSIGN)) {
       return null;
@@ -220,12 +223,11 @@ export function Parser(getNextTokens) {
       nextToken();
       leftExp = infix(leftExp);
     }
-
     return leftExp;
   }
 
   function parseBoolean() {
-    return { token: curToken, value: curTokenIs(tokenType.TRUE) };
+    return { type: "Boolean", value: curTokenIs(tokenType.TRUE) };
   }
 
   function parseGroupedExpression() {
@@ -241,7 +243,7 @@ export function Parser(getNextTokens) {
   }
 
   function parseIfExpression() {
-    const expression = { token: curToken };
+    const expression = { type: "If" };
 
     if (!expectPeek(tokenType.LPAREN)) {
       return null;
@@ -289,7 +291,7 @@ export function Parser(getNextTokens) {
   }
 
   function parseFunctionLiteral() {
-    const lit = { token: curToken };
+    const lit = { type: "Function" };
 
     if (!expectPeek(tokenType.LPAREN)) {
       return null;
@@ -333,7 +335,7 @@ export function Parser(getNextTokens) {
   }
 
   function parseCallExpression(fn) {
-    const exp = { token: curToken, function: fn };
+    const exp = { type: "CallExpression", function: fn };
 
     exp.arguments = parseCallArguments();
 
