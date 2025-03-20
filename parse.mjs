@@ -40,6 +40,7 @@ export function Parser() {
   registerPrefix(tokenType.TRUE, parseBoolean);
   registerPrefix(tokenType.FALSE, parseBoolean);
   registerPrefix(tokenType.LPAREN, parseGroupedExpression);
+  registerPrefix(tokenType.IF, parseIfExpression);
 
   const infixParseFns = new Map();
   registerInfix(tokenType.PLUS, parseInfixExpression);
@@ -245,6 +246,25 @@ export function Parser() {
     expression.consequence = parseBlockStatement();
 
     return expression;
+  }
+
+  function parseBlockStatement() {
+    const block = { token: curToken };
+    block.statements = [];
+
+    nextToken();
+
+    while (!curTokenIs(tokenType.RBRACE) && !curTokenIs(token.EOF)) {
+      const stms = parseStatement();
+
+      if (stms != null) {
+        block.statements.push(stms);
+      }
+
+      nextToken();
+    }
+
+    return block;
   }
 
   return programStatement;
