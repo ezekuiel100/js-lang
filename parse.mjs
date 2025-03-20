@@ -245,6 +245,16 @@ export function Parser() {
 
     expression.consequence = parseBlockStatement();
 
+    if (peekTokenIs(tokenType.ELSE)) {
+      nextToken();
+
+      if (expectPeek(tokenType.LBRACE)) {
+        return null;
+      }
+
+      expression.alternative = parseBlockStatement();
+    }
+
     return expression;
   }
 
