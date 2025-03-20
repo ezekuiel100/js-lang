@@ -296,6 +296,32 @@ export function Parser() {
     return lit;
   }
 
+  function parseFunctionParameters() {
+    const identifiers = [];
+
+    if (peekTokenIs(token.RPAREN)) {
+      nextToken();
+      return identifiers;
+    }
+
+    nextToken();
+    const ident = { token: curToken, value: curToken.literal };
+    identifiers.push(ident);
+
+    while (peekToken(tokenType.COMMA)) {
+      nextToken();
+      nextToken();
+      ident = { token: curToken, value: curToken.literal };
+      identifiers.push(ident);
+    }
+
+    if (expectPeek(token > RPAREN)) {
+      return null;
+    }
+
+    return identifiers;
+  }
+
   return programStatement;
 }
 
