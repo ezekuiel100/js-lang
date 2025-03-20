@@ -24,6 +24,7 @@ const Precedence = new Map([
   [tokenType.MINUS, precedence.SUM],
   [tokenType.SLASH, precedence.PRODUCT],
   [tokenType.ASTERISK, precedence.PRODUCT],
+  [tokenType.LPAREN, precedence.CALL],
 ]);
 
 export function Parser() {
@@ -137,6 +138,10 @@ export function Parser() {
       return null;
     }
 
+    nextToken();
+
+    stmt.value = parseExpression(LOWEST);
+
     while (!curTokenIs(tokenType.SEMICOLON)) {
       nextToken();
     }
@@ -169,9 +174,11 @@ export function Parser() {
   }
 
   function parseReturnStatement() {
-    stmt = { token: curToken };
+    const stmt = { token: curToken };
 
     nextToken();
+
+    stmt.returnValue = parseExpression(LOWEST);
 
     while (!curTokenIs(tokenType.SEMICOLON)) {
       nextToken();
