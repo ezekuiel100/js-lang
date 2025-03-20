@@ -52,6 +52,7 @@ export function Parser() {
   registerInfix(tokenType.NOT_EQ, parseInfixExpression);
   registerInfix(tokenType.LT, parseInfixExpression);
   registerInfix(tokenType.GT, parseInfixExpression);
+  registerInfix(tokenType.LPAREN, parseCallExpression);
 
   function registerPrefix(tokenType, fn) {
     prefixParseFns.set(tokenType, fn);
@@ -320,6 +321,14 @@ export function Parser() {
     }
 
     return identifiers;
+  }
+
+  function parseCallExpression(fn) {
+    const exp = { token: curToken, function: fn };
+
+    exp.arguments = parseCallArguments();
+
+    return exp;
   }
 
   return programStatement;
