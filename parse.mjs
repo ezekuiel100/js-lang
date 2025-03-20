@@ -1,6 +1,5 @@
 import lexer, { tokenType } from "./lexer.mjs";
 
-let programStatement = [];
 let curToken, peekToken;
 let programErrors = [];
 const errors = [];
@@ -27,10 +26,8 @@ const Precedence = new Map([
   [tokenType.LPAREN, precedence.CALL],
 ]);
 
-export function Parser() {
-  const getNextToken = lexer(code);
-
-  neinoken();
+export function Parser(getNextTokens) {
+  nextToken();
   nextToken();
 
   const prefixParseFns = new Map();
@@ -65,7 +62,24 @@ export function Parser() {
 
   function nextToken() {
     curToken = peekToken;
-    peekToken = getNextToken();
+    peekToken = getNextTokens();
+  }
+
+  function parseProgram() {
+    const program = {};
+    program.statements = [];
+
+    while (curToken.type != tokenType.EOF) {
+      let stmt = parseStatement();
+
+      if (stmt != null) {
+        program.push(stmt);
+      }
+
+      nextToken();
+    }
+
+    return program;
   }
 
   function parseIdentifier() {
@@ -102,18 +116,6 @@ export function Parser() {
     errors.push(msg);
   }
 
-  function parseProgram() {
-    while (curToken.type != tokenType.EOF) {
-      let stmt = parseStatement();
-
-      if (stmt != null) {
-        programStatement.push(stmt);
-      }
-    }
-
-    nextToken();
-  }
-
   function parseStatement() {
     switch (curToken.type) {
       case tokenType.LET:
@@ -140,7 +142,7 @@ export function Parser() {
 
     nextToken();
 
-    stmt.value = parseExpression(LOWEST);
+    stmt.value = parseExpression(precedence.LOWEST);
 
     while (!curTokenIs(tokenType.SEMICOLON)) {
       nextToken();
@@ -188,10 +190,10 @@ export function Parser() {
   }
 
   function parseExpressionStatement() {
-    stmt = { token: curToken };
+    const stmt = { token: curToken };
     stmt.expression = parseExpression(LOWEST);
 
-    if (peekToken(tokenType.SEMICOLON)) {
+    if (peekTokenIs(tokenType.SEMICOLON)) {
       nextToken();
     }
 
@@ -206,7 +208,7 @@ export function Parser() {
       return null;
     }
 
-    leftExp = prefix();
+    const leftExp = prefix();
 
     while (!peekTokenIs(tokenType.SEMICOLON) && precedence < peekPrecedence()) {
       const infix = infixParseFns.get(peekToken.type);
@@ -257,7 +259,7 @@ export function Parser() {
     if (peekTokenIs(tokenType.ELSE)) {
       nextToken();
 
-      if (expectPeek(tokenType.LBRACE)) {
+      if (!expectPeek(tokenType.LBRACE)) {
         return null;
       }
 
@@ -273,7 +275,7 @@ export function Parser() {
 
     nextToken();
 
-    while (!curTokenIs(tokenType.RBRACE) && !curTokenIs(token.EOF)) {
+    while (!curTokenIs(tokenType.RBRACE) && !curTokenIs(tokenType.EOF)) {
       const stms = parseStatement();
 
       if (stms != null) {
@@ -323,7 +325,7 @@ export function Parser() {
       identifiers.push(ident);
     }
 
-    if (expectPeek(token > RPAREN)) {
+    if (expectPeek(tokenType.RPAREN)) {
       return null;
     }
 
@@ -362,14 +364,14 @@ export function Parser() {
     return args;
   }
 
-  return programStatement;
+  return { parseProgram, errors };
 }
 
 function peekPrecedence() {
-  const precedence = Precedence.get(peekToken.type);
+  const tokenPrecedence = Precedence.get(peekToken.type);
 
-  if (precedence) {
-    return precedence;
+  if (tokenPrecedence) {
+    return tokenPrecedence;
   }
 
   return precedence.LOWEST;
