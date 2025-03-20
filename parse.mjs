@@ -228,6 +228,25 @@ export function Parser() {
     return exp;
   }
 
+  function parseIfExpression() {
+    const expression = { token: curToken };
+
+    if (!expectPeek(tokenType.LPAREN)) {
+      return null;
+    }
+
+    nextToken();
+    expression.condition = parseExpression(LOWEST);
+
+    if (!expectPeek(tokenType.LBRACE)) {
+      return null;
+    }
+
+    expression.consequence = parseBlockStatement();
+
+    return expression;
+  }
+
   return programStatement;
 }
 
