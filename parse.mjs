@@ -331,6 +331,30 @@ export function Parser() {
     return exp;
   }
 
+  function parseCallArguments() {
+    const args = [];
+
+    if (peekTokenIs(tokenType.RPAREN)) {
+      nextToken();
+      return args;
+    }
+
+    nextToken();
+    args.push(parseExpression(LOWEST));
+
+    while (peekTokenIs(tokenType.COMMA)) {
+      nextToken();
+      nextToken();
+      args.push(parseExpression(LOWEST));
+    }
+
+    if (expectPeek(tokenType.RPAREN)) {
+      return null;
+    }
+
+    return args;
+  }
+
   return programStatement;
 }
 
